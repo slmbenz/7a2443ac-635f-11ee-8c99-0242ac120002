@@ -1,26 +1,71 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Box, CircularProgress, Container, Grid } from "@mui/material";
+import axios from "axios";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import "./App.css";
+import EventList from "./components/EventList";
+import NavBar from "./components/NavBar";
+
+const queryClient = new QueryClient();
 
 function App() {
+  const [cartItems, setCartItems] = useState<string[]>([]);
+
+  const queryKey = "events";
+
+  const { data, isLoading, isError, isFetching } = useQuery(queryKey, () =>
+    axios
+      .get("https://teclead-ventures.github.io/data/london-events.json")
+      .then((response) => response.data)
+  );
+
+  const addToCart = (eventTitle: string) => {
+    setCartItems([...cartItems, eventTitle]);
+  };
+
+  if (isLoading || isFetching) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <NavBar cartItemCount={cartItems.length} />
+      <Container>
+        <Grid
+          container
+          spacing={3}
+          style={{
+            padding: "35px",
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          {data && <EventList events={data} addToCart={addToCart} />}
+        </Grid>
+      </Container>
     </div>
   );
 }
 
-export default App;
+const AppWrapper = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
+};
+
+export default AppWrapper;
