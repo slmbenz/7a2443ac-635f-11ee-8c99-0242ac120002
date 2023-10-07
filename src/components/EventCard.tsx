@@ -12,11 +12,29 @@ import { EventInfo } from "../types/interfaces";
 interface EventCardProps {
   event: EventInfo;
   addToCart: (title: string) => void;
+  removeFromCart: (title: string) => void;
 }
 
 const EventCard = ({ event, addToCart }: EventCardProps) => {
+  const formatDate = (date: Date | undefined): string => {
+    if (!date) return "";
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+
+    return new Date(date).toLocaleString("de-DE", options).replace(",", "");
+  };
+
   return (
-    <Card>
+    <Card
+      style={{ height: 400, position: "relative", marginBottom: "1rem", maxWidth: "380px" }}
+    >
       <CardHeader
         avatar={<Avatar aria-label="event">{event.title[0]}</Avatar>}
         title={event.title}
@@ -30,15 +48,29 @@ const EventCard = ({ event, addToCart }: EventCardProps) => {
       <CardContent>
         <Typography
           variant="subtitle1"
-          style={{ display: "flex", alignItems: "center" }}
+          style={{ display: "flex", alignItems: "left" }}
         >
-          <LocationOnIcon /> {event.venue.name}
+          <LocationOnIcon />
+          <a
+            href={event.venue.direction}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ marginLeft: "5px" }}
+          >
+            {event.venue.name}
+          </a>
         </Typography>
-        <Typography variant="body2">
-          Starts: {event.startTime?.toString()}
+        <Typography
+          variant="body2"
+          style={{ display: "flex", alignItems: "left" }}
+        >
+          | Starts: {formatDate(event.startTime)}
         </Typography>
-        <Typography variant="body2">
-          Ends: {event.endTime?.toString()}
+        <Typography
+          variant="body2"
+          style={{ display: "flex", alignItems: "left" }}
+        >
+          | Ends: {formatDate(event.endTime)}
         </Typography>
       </CardContent>
       <IconButton

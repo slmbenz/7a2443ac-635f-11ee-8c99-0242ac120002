@@ -1,0 +1,22 @@
+.event-group {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 10px;
+
+  .date-header {
+    background: linear-gradient(to left, transparent, white);
+    color: rgb(16, 95, 141);
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    text-align: left;
+  }
+
+  .event-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
