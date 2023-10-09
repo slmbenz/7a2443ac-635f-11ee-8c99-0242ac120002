@@ -7,7 +7,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 interface EventListProps {
   events: EventInfo[];
   addToCart: (title: string) => void;
-  removeFromCart: (item: string) => void;
   setEvents: React.Dispatch<React.SetStateAction<EventInfo[]>>;
   searchKeyword: string;
 }
@@ -15,7 +14,6 @@ interface EventListProps {
 const EventList = ({
   events,
   addToCart,
-  removeFromCart,
   setEvents,
   searchKeyword,
 }: EventListProps) => {
@@ -92,7 +90,6 @@ const EventList = ({
                 key={event._id}
                 event={event}
                 addToCart={handleAddToCart}
-                removeFromCart={removeFromCart}
               />
             ))}
           </div>

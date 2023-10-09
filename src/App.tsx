@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import "./App.css";
 import EventList from "./components/EventList";
 import NavBar from "./components/Header/NavBar";
-import ShoppingCartComponent from "./components/Header/ShoppingCartComponent";
 import { EventInfo } from "./types/interfaces";
 
 const queryClient = new QueryClient();
@@ -12,7 +11,6 @@ const queryClient = new QueryClient();
 const App = () => {
   const [cartItems, setCartItems] = useState<string[]>([]);
   const [events, setEvents] = useState<EventInfo[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
 
   const queryKey = "events";
@@ -33,8 +31,8 @@ const App = () => {
   );
 
   // Handler to update the searchKeyword state
-  const handleSearchChange = (searchKeyword: string) => {
-    setSearchKeyword(searchKeyword);
+  const handleSearchChange = (newSearchKeyword: string) => {
+    setSearchKeyword(newSearchKeyword);
   };
 
   // Filter events based on the searchKeyword
@@ -50,10 +48,15 @@ const App = () => {
     const updatedEvents = events.filter((event) => event.title !== eventTitle);
     setEvents(updatedEvents);
   };
-  console.log("Updated Events:", events);
+
   const removeFromCart = (item: string) => {
-    const updatedCart = cartItems.filter((cartItem) => cartItem !== item);
-    setCartItems(updatedCart);
+    setCartItems(cartItems.filter((cartItem) => cartItem !== item));
+
+    // Add the removed event back to the events list
+    const removedEvent = data.find((event: EventInfo) => event.title === item);
+    if (removedEvent) {
+      setEvents([...events, removedEvent]);
+    }
   };
 
   if (isLoading || isFetching) {
@@ -80,26 +83,25 @@ const App = () => {
       <NavBar
         cartItemCount={cartItems.length}
         cartItems={cartItems}
-        openCart={() => setIsCartOpen(true)}
         onSearchChange={handleSearchChange}
-      />
-      <Container sx={{ marginTop: "1.5625rem", padding: "1rem" }}>
-        {data && (
-          <EventList
-            events={filteredEvents.length > 0 ? events : data}
-            addToCart={addToCart}
-            removeFromCart={removeFromCart}
-            setEvents={setEvents}
-            searchKeyword={searchKeyword}
-          />
-        )}
-      </Container>
-      <ShoppingCartComponent
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
         removeFromCart={removeFromCart}
       />
+      <Container
+        sx={{
+          marginTop: "1.5625rem",
+          padding: "1rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <EventList
+          events={filteredEvents.length > 0 ? events : data}
+          addToCart={addToCart}
+          setEvents={setEvents}
+          searchKeyword={searchKeyword}
+        />
+      </Container>
     </div>
   );
 };

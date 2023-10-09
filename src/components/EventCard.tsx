@@ -12,7 +12,6 @@ import { EventInfo } from "../types/interfaces";
 interface EventCardProps {
   event: EventInfo;
   addToCart: (title: string) => void;
-  removeFromCart: (title: string) => void;
 }
 
 const EventCard = ({ event, addToCart }: EventCardProps) => {
